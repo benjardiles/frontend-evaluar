@@ -1,27 +1,37 @@
+"use client";
+
 import { useState } from "react";
 import Navbar from "./components/Navbar";
+import TicketForm from "./components/TicketForm";
 import TicketList from "./components/TicketList";
-import TicketDetails from "./components/TicketDetails";
+
+type TicketStatusType = "Abierto" | "En progreso" | "Cerrado"; 
+
+interface Ticket {
+  id: string;
+  title: string;
+  status: TicketStatusType;
+}
 
 export default function Home() {
-  const [selectedTicket, setSelectedTicket] = useState(null);
+  const [tickets, setTickets] = useState<Ticket[]>([]);
+
+  const handleAddTicket = (ticket: Ticket) => {
+    setTickets([...tickets, ticket]);
+  };
 
   return (
     <>
       <Navbar />
-      <main className="flex flex-col lg:flex-row gap-4 p-4">
-        {/* Lista de Tickets /}
-        <div className="w-full lg:w-1/2">
-          <TicketList onSelect={setSelectedTicket} />
+      <main className="flex flex-col lg:flex-row gap-4 p-4 bg-white min-h-screen">
+        {/* Lista de Tickets */}
+        <div className="w-full lg:w-1/3 border p-4 rounded shadow flex-grow">
+          <TicketList tickets={tickets} />
         </div>
 
-        {/ Detalles del Ticket */}
-        <div className="w-full lg:w-1/2">
-          {selectedTicket ? (
-            <TicketDetails ticket={selectedTicket} />
-          ) : (
-            <p className="text-gray-500">Selecciona un ticket para ver detalles</p>
-          )}
+        {/* Formulario de creación de Tickets */}
+        <div className="w-full lg:w-1/3 border p-4 rounded shadow flex-grow mt-4 lg:mt-0">
+          <TicketForm onSubmit={handleAddTicket} />
         </div>
       </main>
     </>
