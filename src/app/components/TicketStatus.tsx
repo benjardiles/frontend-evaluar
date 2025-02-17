@@ -12,3 +12,5 @@ export default function TicketStatus({ status }) {
       </div>
     );
   }
+
+
