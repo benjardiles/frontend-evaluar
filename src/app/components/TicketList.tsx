@@ -3,8 +3,8 @@ import Link from "next/link";
 type TicketStatusType = "Abierto" | "En progreso" | "Cerrado"; 
 
 interface Ticket {
-  id: string;
-  title: string;
+  id_ticket: string;
+  description: string;
   status: TicketStatusType;
 }
 
@@ -27,13 +27,13 @@ export default function TicketList({ tickets }: TicketListProps) {
         </thead>
         <tbody>
           {tickets.map((ticket) => (
-            <tr key={ticket.id} className="border hover:bg-gray-100">
-              <td className="border p-2">{ticket.id}</td>
-              <td className="border p-2">{ticket.title}</td>
+            <tr key={ticket.id_ticket} className="border hover:bg-gray-100">
+              <td className="border p-2">{ticket.id_ticket}</td>
+              <td className="border p-2">{ticket.description}</td>
               <td className="border p-2">{ticket.status}</td>
               <td className="border p-2">
                 {/* Usamos el componente Link para la navegación */}
-                <Link href={`/ticket/${ticket.id}`}>
+                <Link href={`/ticket/${ticket.id_ticket}`}>
                   <button className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">
                     Ver detalles
                   </button>
