@@ -1,6 +1,8 @@
 import Link from "next/link";
+import { useState } from "react";
+import { CircularProgress, Button } from "@mui/material";
 
-type TicketStatusType = "Abierto" | "En progreso" | "Cerrado"; 
+type TicketStatusType = "Abierto" | "En progreso" | "Cerrado";
 
 interface Ticket {
   id_ticket: string;
@@ -13,6 +15,13 @@ interface TicketListProps {
 }
 
 export default function TicketList({ tickets }: TicketListProps) {
+  const [loading, setLoading] = useState<string | null>(null);
+
+  const handleClick = async (id: string) => {
+    setLoading(id);
+    setTimeout(() => setLoading(null), 1500); // Mantener el spinner por 1.5 segundos
+  };
+
   return (
     <div className="bg-white p-4 rounded-lg shadow">
       <h2 className="text-xl font-semibold mb-4 text-black">Lista de Tickets</h2>
@@ -32,13 +41,22 @@ export default function TicketList({ tickets }: TicketListProps) {
               <td className="border p-2">{ticket.description}</td>
               <td className="border p-2">{ticket.status}</td>
               <td className="border p-2">
-                {/* Usamos el componente Link para la navegación */}
-                <Link href={`/ticket/${ticket.id_ticket}`}>
-                  <button className="bg-blue-600 text-white px-4 py-1 rounded hover:bg-blue-700">
-                    Ver detalles
-                  </button>
+                <Link href={`/ticket/${ticket.id_ticket}`} passHref>
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={() => handleClick(ticket.id_ticket)}
+                    disabled={loading === ticket.id_ticket}
+                    style={{ minWidth: "120px" }}
+                  >
+                    {loading === ticket.id_ticket ? (
+                      <CircularProgress size={24} color="inherit" />
+                    ) : (
+                      "Ver detalles"
+                    )}
+                  </Button>
                 </Link>
-              </td>
+              </td> 
             </tr>
           ))}
         </tbody>

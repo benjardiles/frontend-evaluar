@@ -93,9 +93,9 @@ export default function TicketForm({ onSubmit }: TicketFormProps) {
           onChange={(e) => setStatus(e.target.value as TicketStatusType)}
           className="mt-1 block w-full px-3 py-2 border rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-black"
         >
-          <option value="Abierto">Abierto</option>
-          <option value="En progreso">En progreso</option>
-          <option value="Cerrado">Cerrado</option>
+          <option value="OPEN">Abierto</option>
+          <option value="IN_PROGRESS">En progreso</option>
+          <option value="CLOSED">Cerrado</option>
         </select>
       </div>
 
