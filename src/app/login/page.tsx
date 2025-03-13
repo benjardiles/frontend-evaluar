@@ -8,13 +8,15 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
-    const [remember, setRemember] = useState(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
     const router = useRouter();
 
     const handleLogin = async () => {
         const data = await fetchLogin({ email, password });
         if (data) {
+            // Guardar el ID del usuario en el local storage
+            localStorage.setItem("userId", data.userId);
+            localStorage.setItem("isAuthenticated", "true");
             router.push("/ticket");
         } else {
             setErrorMessage("Correo electrónico o contraseña incorrectos");

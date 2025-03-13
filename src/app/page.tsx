@@ -4,10 +4,18 @@ import { useEffect } from "react";
 
 export default function Home() {
   const router = useRouter();
+
   useEffect(() => {
-    router.push('/ticket');
-    router.push('/login');
-  }, []);
+    if (typeof window !== 'undefined') {
+      const isAuthenticated = localStorage.getItem("isAuthenticated");
+
+      if (isAuthenticated === "true") {
+        router.push('/ticket');
+      } else {
+        router.push('/login');
+      }
+    }
+  }, [router]);
 
   return (
     <>

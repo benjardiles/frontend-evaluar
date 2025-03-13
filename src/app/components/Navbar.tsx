@@ -1,9 +1,21 @@
 import React from 'react';
-import { AppBar, Toolbar, Typography, Box } from '@mui/material';
+import { AppBar, Toolbar, Typography, Box, Button } from '@mui/material';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const Navbar: React.FC = () => {
+  const router = useRouter();
+
+  const handleHomeClick = () => {
+    const userRole = localStorage.getItem("userRole");
+    if (userRole === "admin") {
+      router.push("/"); // Ruta para el administrador
+    } else {
+      router.push("/user"); // Ruta para el usuario
+    }
+  };
+
   return (
     <AppBar position="static" sx={{ backgroundColor: '#56A632' }}>
       <Toolbar>
@@ -27,6 +39,7 @@ const Navbar: React.FC = () => {
             Síguenos en: <a href="https://twitter.com/eval_docentes" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD700', textDecoration: 'none' }}>@eval_docentes</a>
           </Typography>
         </Box>
+        
       </Toolbar>
     </AppBar>
   );
