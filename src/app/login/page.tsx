@@ -13,16 +13,19 @@ export default function LoginPage() {
 
     const handleLogin = async () => {
         const data = await fetchLogin({ email, password });
-        if (data) {
-            // Guardar el ID del usuario en el local storage
-            localStorage.setItem("userId", data.userId);
+    
+        if (data && !data.error && data.data) {
+            // Guardar el ID del usuario y token en el localStorage
+            localStorage.setItem("idAdmin", data.data.idAdmin);
+            localStorage.setItem("accessToken", data.data.accessToken);
+            localStorage.setItem("refreshToken", data.data.refreshToken);
             localStorage.setItem("isAuthenticated", "true");
+    
             router.push("/ticket");
         } else {
             setErrorMessage("Correo electrónico o contraseña incorrectos");
         }
     };
-
     const handleClickShowPassword = () => {
         setShowPassword(!showPassword);
     };

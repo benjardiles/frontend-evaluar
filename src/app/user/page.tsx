@@ -3,7 +3,8 @@ import { useEffect, useState } from "react";
 import Navbar from "@/app/components/Navbar";
 import PaginatedTicketList from "@/app/components/PaginatedTicketList";
 import axios from "axios";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, Button } from "@mui/material";
+import { useRouter } from "next/navigation";
 
 type TicketStatusType = "Abierto" | "En progreso" | "Cerrado";
 
@@ -18,6 +19,7 @@ export default function UserTickets() {
   const [page, setPage] = useState(1);
   const [count, setCount] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleChange = (event: React.ChangeEvent<unknown>, value: number) => {
     setPage(value);
@@ -42,6 +44,10 @@ export default function UserTickets() {
     }
   }, [page]);
 
+  const handleCreateTicket = () => {
+    router.push("/user/create-ticket"); // Ruta para crear un ticket
+  };
+
   return (
     <Box className="min-h-screen flex flex-col bg-gray-100">
       <Navbar />
@@ -52,7 +58,17 @@ export default function UserTickets() {
         {error ? (
           <Typography color="error">{error}</Typography>
         ) : (
-          <PaginatedTicketList tickets={tickets} count={count} handlePageChange={handleChange} page={page} />
+          <>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={handleCreateTicket}
+              sx={{ mb: 4 }}
+            >
+              Crear Ticket
+            </Button>
+            <PaginatedTicketList tickets={tickets} count={count} handlePageChange={handleChange} page={page} />
+          </>
         )}
       </Box>
     </Box>
