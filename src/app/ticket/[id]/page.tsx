@@ -82,36 +82,40 @@ export default function TicketDetails() {
     };
   }, [id]);
 
-  const handleNuevoComentario = async () => {
+   const handleNuevoComentario = async () => {
     if (!nuevoComentario.trim()) {
       setError("El comentario no puede estar vacío.");
       return;
     }
-
+  
     setLoadingComentario(true);
-
+  
     try {
       const idAdmin = localStorage.getItem("idAdmin");
-      
       if (!idAdmin) {
         setError("No se encontró el ID del administrador en el local storage.");
         return;
       }
-      console.log(nuevoComentario,idAdmin,id);
-      
+  
       const response = await axios.post("http://localhost:7001/comentaries", {
         comentario: nuevoComentario,
         idAdmin,
         idTicket: id,
       });
-      console.log(response.data);
+  
       if (response.data.error) {
-        console.log(response.data);
         throw new Error(response.data.message || "Error al agregar el comentario");
       }
-
-      setComentarios((prev) => [...prev, response.data.data]);
-      setNuevoComentario("");
+  
+      // Transformar la fecha del nuevo comentario para evitar "Invalid Date"
+      const nuevoComentarioConFecha = {
+        ...response.data.data,
+        createdAt: new Date(response.data.data.createdAt).toISOString(), // Convertir a ISO 8601
+      };
+  
+      // Actualizar el estado de los comentarios con el nuevo comentario
+      setComentarios((prev) => [...prev, nuevoComentarioConFecha]);
+      setNuevoComentario(""); // Limpiar el campo de texto
       setError(null);
     } catch (err) {
       console.error("Error al agregar comentario:", err);
@@ -121,20 +125,39 @@ export default function TicketDetails() {
     }
   };
 
-  const handleEstadoChange = async () => {
+    const handleEstadoChange = async () => {
     setLoading(true);
-
+  
+    // Mapeo de valores del frontend al backend
+    const estadoMapeado = {
+      Abierto: "open",
+      "En progreso": "in_progress",
+      Cerrado: "closed",
+    };
+  
+    const estadoBackend = estado in estadoMapeado ? estadoMapeado[estado] : undefined;
+  
+    if (!estadoBackend) {
+      console.error("Estado inválido:", estado);
+      setError("Estado inválido. Intenta nuevamente.");
+      setLoading(false);
+      return;
+    }
+  
     try {
       const response = await axios.put(`http://localhost:7001/tickets/${id}`, {
-        status: estado,
+        status: estadoBackend, // Enviar el estado mapeado al backend
       });
-
+  
       if (response.data.error) {
         throw new Error(response.data.message || "Error al actualizar el estado del ticket");
       }
-
+  
       alert("Estado actualizado correctamente");
       setError(null);
+  
+      // Opcional: Actualizar el estado local del ticket
+      setTicket((prev) => (prev ? { ...prev, status: estado } : prev));
     } catch (err) {
       console.error("Error al cambiar el estado del ticket:", err);
       setError("No se pudo cambiar el estado del ticket. Intenta nuevamente.");
@@ -195,7 +218,7 @@ export default function TicketDetails() {
                     {comentarios.length > 0 ? (
                       comentarios.map((comentario) => (
                         <Box
-                          key={comentario.id_comentario}
+                          key={comentario.id_comentario} // Clave única para cada comentario
                           mb={2}
                           p={2}
                           border="1px solid #ccc"
