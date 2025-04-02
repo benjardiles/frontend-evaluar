@@ -16,7 +16,12 @@ const Navbar: React.FC = () => {
   };
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: '#56A632' }}>
+    <AppBar
+      position="static"
+      sx={{
+        background: 'linear-gradient(90deg, #4CAF50 0%, #008080 50%, #4682B4 100%)', // Degradado más suave
+      }}
+    >
       <Toolbar>
         <Box sx={{ flexGrow: 1, display: 'flex', alignItems: 'center' }}>
           <Link href="/" passHref>
@@ -34,15 +39,25 @@ const Navbar: React.FC = () => {
           <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#FFFFFF', fontSize: '1rem', mb: 1 }}>
             Contáctanos: <a href="mailto:info@evaluar.cl" style={{ color: '#FFD700', textDecoration: 'none' }}>info@evaluar.cl</a>
           </Typography>
+          <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#FFFFFF', fontSize: '1rem', mb: 1 }}>
+            WhatsApp: <a href="https://wa.me/56989323735" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD700', textDecoration: 'none' }}>+56 9 8932 3735</a>
+          </Typography>
           <Typography variant="body1" sx={{ fontWeight: 'bold', color: '#FFFFFF', fontSize: '1rem' }}>
             Síguenos en: <a href="https://twitter.com/eval_docentes" target="_blank" rel="noopener noreferrer" style={{ color: '#FFD700', textDecoration: 'none' }}>@eval_docentes</a>
           </Typography>
         </Box>
         <Button
           variant="contained"
-          color="secondary"
           onClick={handleLogout}
-          sx={{ backgroundColor: '#FF0000', color: '#FFFFFF', fontWeight: 'bold', ml: 2 }}
+          sx={{
+            backgroundColor: '#FF8C00', // Naranja oscuro
+            color: '#FFFFFF',
+            fontWeight: 'bold',
+            ml: 2,
+            '&:hover': {
+              backgroundColor: '#FF7F00', // Naranja más claro al pasar el mouse
+            },
+          }}
         >
           Logout
         </Button>

@@ -25,23 +25,21 @@ export default function UserTickets() {
     setPage(value);
   };
 
-  const getTickets = async (userId: string) => {
+  const getTickets = async (userId: string | null) => {
     try {
-      const response = await axios.get(`http://localhost:7001/user/${userId}/tickets?page=${page}`);
+      const response = await axios.get(`http://localhost:7001/user/${userId || "defaultUser"}/tickets?page=${page}`);
       setTickets(response.data.data.rows);
       setCount(response.data.data.count);
+      setError(null); // Limpiar errores previos
     } catch (error) {
+      console.error("Error al obtener los tickets:", error);
       setError("Error al obtener los tickets");
     }
   };
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
-    if (userId) {
-      getTickets(userId);
-    } else {
-      setError("No se encontró el ID del usuario en el local storage.");
-    }
+    getTickets(userId); // Llamar a la función con el userId o null si no existe
   }, [page]);
 
   const handleCreateTicket = () => {
@@ -55,21 +53,22 @@ export default function UserTickets() {
         <Typography variant="h4" fontWeight="bold" mb={4}>
           Lista de Tickets (Usuario)
         </Typography>
-        {error ? (
-          <Typography color="error">{error}</Typography>
-        ) : (
-          <>
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={handleCreateTicket}
-              sx={{ mb: 4 }}
-            >
-              Crear Ticket
-            </Button>
-            <PaginatedTicketList tickets={tickets} count={count} handlePageChange={handleChange} page={page} />
-          </>
+        {error && (
+          <Typography color="error" sx={{ mb: 2 }}>
+            {error}
+          </Typography>
         )}
+        <>
+          <Button
+            variant="contained"
+            color="primary"
+            onClick={handleCreateTicket}
+            sx={{ mb: 4 }}
+          >
+            Crear Ticket
+          </Button>
+          <PaginatedTicketList tickets={tickets} count={count} handlePageChange={handleChange} page={page} />
+        </>
       </Box>
     </Box>
   );

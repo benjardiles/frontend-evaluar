@@ -82,87 +82,89 @@ export default function TicketDetails() {
     };
   }, [id]);
 
-   const handleNuevoComentario = async () => {
+  const handleNuevoComentario = async () => {
     if (!nuevoComentario.trim()) {
       setError("El comentario no puede estar vacío.");
       return;
     }
-  
+
     setLoadingComentario(true);
-  
+    let tempComentario: Comentario;
+
     try {
       const idAdmin = localStorage.getItem("idAdmin");
       if (!idAdmin) {
         setError("No se encontró el ID del administrador en el local storage.");
         return;
       }
-  
+      tempComentario = {
+        id_comentario: Math.floor(Math.random() * 1000000), // Generar un ID temporal
+        comentario: nuevoComentario,
+        idAdmin,
+        id_ticket: Number(id),
+        createdAt: new Date().toISOString(),
+      };
+
+      setComentarios((prev) => [...prev, tempComentario]); // Agregar el nuevo comentario temporalmente
+      setNuevoComentario(""); // Limpiar el campo de texto
+      setError(null); // Limpiar errores previos
       const response = await axios.post("http://localhost:7001/comentaries", {
         comentario: nuevoComentario,
         idAdmin,
         idTicket: id,
+        
       });
-  
-      if (response.data.error) {
-        throw new Error(response.data.message || "Error al agregar el comentario");
+      const response2 = await axios.get(`http://localhost:7001/comentaries/ticket/${id}`);
+      if (response2.data.error) {
+        throw new Error(response2.data.message || "Error al obtener comentarios actualizados");
       }
-  
-      // Transformar la fecha del nuevo comentario para evitar "Invalid Date"
-      const nuevoComentarioConFecha = {
-        ...response.data.data,
-        createdAt: new Date(response.data.data.createdAt).toISOString(), // Convertir a ISO 8601
-      };
-  
-      // Actualizar el estado de los comentarios con el nuevo comentario
-      setComentarios((prev) => [...prev, nuevoComentarioConFecha]);
-      setNuevoComentario(""); // Limpiar el campo de texto
-      setError(null);
+      
+      // 5. Actualizar lista de comentarios con datos frescos del backend
+      setComentarios(response2.data.data || []);
+      
     } catch (err) {
       console.error("Error al agregar comentario:", err);
       setError("No se pudo agregar el comentario. Intenta nuevamente.");
+      
+      // Revertir optimistic update en caso de error
+      setComentarios(prev => prev.filter(c => c.id_comentario !== tempComentario.id_comentario));
     } finally {
       setLoadingComentario(false);
     }
   };
+      
+
+     
+
+      // Transformar la fecha del nuevo comentario para evitar "Invalid Date"
+     
+
+      // Actualizar el estado de los comentarios con el nuevo comentario
+
 
     const handleEstadoChange = async () => {
-    setLoading(true);
-  
-    // Mapeo de valores del frontend al backend
-    const estadoMapeado = {
-      Abierto: "open",
-      "En progreso": "in_progress",
-      Cerrado: "closed",
-    };
-  
-    const estadoBackend = estado in estadoMapeado ? estadoMapeado[estado] : undefined;
-  
-    if (!estadoBackend) {
-      console.error("Estado inválido:", estado);
-      setError("Estado inválido. Intenta nuevamente.");
-      setLoading(false);
-      return;
-    }
+    setLoading(true); // Mostrar indicador de carga
   
     try {
+      // Realizar la solicitud PUT al backend
       const response = await axios.put(`http://localhost:7001/tickets/${id}`, {
-        status: estadoBackend, // Enviar el estado mapeado al backend
+        status: estado, // Enviar el nuevo estado
       });
   
       if (response.data.error) {
         throw new Error(response.data.message || "Error al actualizar el estado del ticket");
       }
   
-      alert("Estado actualizado correctamente");
-      setError(null);
+      // Actualizar el estado del ticket en el frontend
+      setTicket((prevTicket) => prevTicket ? { ...prevTicket, status: estado } : null);
   
-      // Opcional: Actualizar el estado local del ticket
-      setTicket((prev) => (prev ? { ...prev, status: estado } : prev));
+      alert("Estado actualizado correctamente");
+      setError(null); // Limpiar errores previos
     } catch (err) {
       console.error("Error al cambiar el estado del ticket:", err);
       setError("No se pudo cambiar el estado del ticket. Intenta nuevamente.");
     } finally {
-      setLoading(false);
+      setLoading(false); // Ocultar indicador de carga
     }
   };
 
